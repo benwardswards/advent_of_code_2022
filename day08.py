@@ -3,7 +3,6 @@ from rich import print, traceback
 traceback.install()
 from pathlib import Path
 from dataclasses import dataclass, field
-from collections import defaultdict
 import numpy as np
 
 RAWTESTDATA = """\

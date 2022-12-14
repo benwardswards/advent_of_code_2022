@@ -96,20 +96,18 @@ class Bridge:
 
 
 test_bridge = Bridge(RAWTESTDATA)
-print(test_bridge)
 test_bridge.move_rope()
-# print(test_bridge)
+print(test_bridge)
 test_bridge.print_tail_visited()
+print("The number of locations the tail visited, should be 13")
 test_bridge.number_visited()
 
 #
-# RAWDATA = Path("day09.txt").read_text()
-# test_bridge = Bridge(RAWDATA)
-# print(test_bridge)
-# test_bridge.move_rope()
-## print(test_bridge)
-## test_bridge.print_tail_visited()
-# test_bridge.number_visited()
+RAWDATA = Path("day09.txt").read_text()
+test_bridge = Bridge(RAWDATA)
+test_bridge.move_rope()
+print("the number of locations the tail visited part a ")
+test_bridge.number_visited()
 
 
 @dataclass
@@ -118,14 +116,16 @@ class Bridge_part2:
     tail_visited: set[(int, int)]
     head: "Position"
     tails: list("Position")
+    matsize: int
 
-    def __init__(self, data) -> None:
+    def __init__(self, data, matsize=6, startpos=(0, 0)) -> None:
+        self.matsize = matsize
         self.data = [
             (line.split()[0], int(line.split()[1])) for line in data.splitlines()
         ]
         self.tail_visited = set()
-        self.head = Position(0, 0)
-        self.tails = [Position(0, 0) for _ in range(9)]
+        self.head = Position(*startpos)
+        self.tails = [Position(*startpos) for _ in range(9)]
 
     def move_rope(self):
         for dir, length in self.data:
@@ -149,9 +149,11 @@ class Bridge_part2:
 
                     out = self.move_tail(first, second)
                     out_tail.append(out)
-                    self.tail_visited.add((out.x, out.z))
                     first = out
+
                 self.tails = out_tail
+                self.tail_visited.add((self.tails[-1].x, self.tails[-1].z))
+            # self.print_snapshot()
 
     def move_tail(self, first, second):
         dx = first.x - second.x
@@ -180,15 +182,18 @@ class Bridge_part2:
 
         print(len(self.tail_visited))
 
-    def print_visited(self):
-        mat = [["." for _ in range(6)] for _ in range(5)]
-        for (x, z) in self.tail_visited:
-            mat[z][x] = "*"
+    def print_snapshot(self):
+        """after tail has been moved print tail."""
+        mat = [["." for _ in range(self.matsize)] for _ in range(self.matsize)]
+        mat[self.head.z][self.head.x] = "H"
+        print("_________________")
+        for itail, pos in enumerate(self.tails):
+            mat[pos.z][pos.x] = str(1 + itail)
         for line in mat[::-1]:
             print("".join(line))
 
     def print_tail_visited(self):
-        mat = [["." for _ in range(6)] for _ in range(5)]
+        mat = [["." for _ in range(self.matsize)] for _ in range(self.matsize)]
         for (x, z) in self.tail_visited:
             mat[z][x] = "*"
         for line in mat[::-1]:
@@ -205,9 +210,17 @@ D 10
 L 25
 U 20"""
 
-test_bridge2 = Bridge_part2(RAWTESTDATA2)
+test_bridge2 = Bridge_part2(RAWTESTDATA2, matsize=30, startpos=(13, 13))
 print(test_bridge2)
 test_bridge2.move_rope()
 print(test_bridge2)
-test_bridge.print_tail_visited()
+test_bridge2.print_tail_visited()
+print(("The number locatinos the tail visited part 2 test set, should be 36"))
+
 test_bridge2.number_visited()
+
+RAWDATA = Path("day09.txt").read_text()
+bridge = Bridge_part2(RAWDATA, matsize=30, startpos=(13, 13))
+bridge.move_rope()
+print(("The number locatinos the tail visited part 2"))
+bridge.number_visited()
